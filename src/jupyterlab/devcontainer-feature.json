@@ -1,0 +1,15 @@
+{
+    "id": "jupyterlab",
+    "version": "1.0.0",
+    "name": "JupyterLab",
+    "dependsOn": {
+        "ghcr.io/codspace/features-fork/python:1": {}
+    },
+    "options": {
+        "configureJupyterlabAllowOrigin": {
+            "type": "string",
+            "default": "",
+            "description": "Configure JupyterLab to accept HTTP requests from the specified origin"
+        }
+    }
+}

@@ -19,9 +19,6 @@ USERNAME="${USERNAME:-"${_REMOTE_USER:-"automatic"}"}"
 UPDATE_RC="${UPDATE_RC:-"true"}"
 USE_ORYX_IF_AVAILABLE="${USEORYXIFAVAILABLE:-"true"}"
 
-INSTALL_JUPYTERLAB="${INSTALLJUPYTERLAB:-"false"}"
-CONFIGURE_JUPYTERLAB_ALLOW_ORIGIN="${CONFIGUREJUPYTERLABALLOWORIGIN:-""}"
-
 # Comma-separated list of python versions to be installed
 # alongside PYTHON_VERSION, but not set as default.
 ADDITIONAL_VERSIONS="${ADDITIONALVERSIONS:-""}"
@@ -313,18 +310,6 @@ install_user_package() {
     sudo_if "${PYTHON_SRC}" -m pip install --user --upgrade --no-cache-dir "$PACKAGE"
 }
 
-add_user_jupyter_config() {
-    CONFIG_DIR="/home/$USERNAME/.jupyter"
-    CONFIG_FILE="$CONFIG_DIR/jupyter_server_config.py"
-
-    # Make sure the config file exists or create it with proper permissions
-    test -d "$CONFIG_DIR" || sudo_if mkdir "$CONFIG_DIR"
-    test -f "$CONFIG_FILE" || sudo_if touch "$CONFIG_FILE"
-
-    # Don't write the same config more than once
-    grep -q "$1" "$CONFIG_FILE" || echo "$1" >> "$CONFIG_FILE"
-}
-
 install_python() {
     version=$1
     # If the os-provided versions are "good enough", detect that and bail out.
@@ -452,23 +437,6 @@ if [[ "${INSTALL_PYTHON_TOOLS}" = "true" ]] && [[ $(python --version) != "" ]]; 
     updaterc "export PIPX_HOME=\"${PIPX_HOME}\""
     updaterc "export PIPX_BIN_DIR=\"${PIPX_BIN_DIR}\""
     updaterc "if [[ \"\${PATH}\" != *\"\${PIPX_BIN_DIR}\"* ]]; then export PATH=\"\${PATH}:\${PIPX_BIN_DIR}\"; fi"
-fi
-
-# Install JupyterLab if needed
-if [ "${INSTALL_JUPYTERLAB}" = "true" ]; then
-    if [ -z "${PYTHON_SRC}" ]; then
-        echo "(!) Could not install Jupyterlab. Python not found."
-        exit 1
-    fi
-
-    install_user_package jupyterlab
-    install_user_package jupyterlab-git
-
-    # Configure JupyterLab if needed
-    if [ -n "${CONFIGURE_JUPYTERLAB_ALLOW_ORIGIN}" ]; then
-        add_user_jupyter_config "c.ServerApp.allow_origin = '${CONFIGURE_JUPYTERLAB_ALLOW_ORIGIN}'"
-        add_user_jupyter_config "c.NotebookApp.allow_origin = '${CONFIGURE_JUPYTERLAB_ALLOW_ORIGIN}'"
-    fi
 fi
 
 # Clean up

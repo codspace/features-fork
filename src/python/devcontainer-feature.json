@@ -36,16 +36,6 @@
       "default": "/usr/local/python",
       "description": "The path where python will be installed."
     },
-    "installJupyterlab": {
-      "type": "boolean",
-      "default": false,
-      "description": "Install JupyterLab, a web-based interactive development environment for notebooks"
-    },
-    "configureJupyterlabAllowOrigin": {
-      "type": "string",
-      "default": "",
-      "description": "Configure JupyterLab to accept HTTP requests from the specified origin"
-    },
     "httpProxy": {
       "type": "string",
       "default": "",
